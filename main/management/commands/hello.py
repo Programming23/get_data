@@ -198,6 +198,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         while True:
             main()
+            new_data = []
+            alrd = {}
             time.sleep(60*10)
 
         self.stdout.write('Get All Data Of Novel')
