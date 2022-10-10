@@ -68,7 +68,7 @@ async def get_chapter(s, index, index_col, index_chapter):
             else:
                 del pgs_wtags[p]
                 ln_prgs -= 1
-        new_data[index]['cols'][index_col]['chapters'][index_chapter]['prgs'] = pgs_wtags.split('::split::')
+        new_data[index]['cols'][index_col]['chapters'][index_chapter]['prgs'] = '::split::'.join(pgs_wtags)
         alrd[f'{index} {index_col} {index_chapter}'] = True
         return
 
