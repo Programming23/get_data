@@ -200,6 +200,6 @@ class Command(BaseCommand):
             main()
             new_data = []
             alrd = {}
-            time.sleep(60*10)
+            time.sleep(60)
 
         self.stdout.write('Get All Data Of Novel')
