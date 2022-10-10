@@ -88,9 +88,9 @@ async def get_chapters_main(index, index_col, start, end):
     async with aiohttp.ClientSession(headers=headers) as session:
         htmls = await get_chapters_tasks(session, index, index_col, start, end)
 
-
+url = 'https://novel.pythonanywhere.com/'
 def main():
-    url = 'http://127.0.0.1:8000/'
+    
     r = requests.get(f'{url}get_last_chapters')
     data = r.json()
     new = False
