@@ -91,7 +91,7 @@ async def get_chapters_main(index, index_col, start, end):
 url = 'https://novel.pythonanywhere.com/'
 def main():
     
-    r = requests.get(f'{url}get_last_chapters')
+    r = requests.get(f'{url}get_last_chapters/')
     data = r.json()
     new = False
     new_col = False
