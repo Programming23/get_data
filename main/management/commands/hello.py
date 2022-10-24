@@ -98,6 +98,7 @@ def main():
     index = 0
     for novel in data:
         new = False
+        print(novel['name'])
         new_col = False
         new_data.append(
             {'id': novel['id'], 'name': novel['name'], 'cols': []})
