@@ -30,6 +30,7 @@ async def get_chapter(s, index, index_col, index_chapter):
             print(r.status)
             return
         #print('Id Chapter :', id_chapter)
+
         html = await r.text()
         b = bs(html, 'html.parser')
         prgs = b.select('.epcontent p')
@@ -42,12 +43,22 @@ async def get_chapter(s, index, index_col, index_chapter):
 
         ln_prgs = len(pgs_wtags)
         p = 0
+
         while p < ln_prgs:
             pgs_wtags[p] = pgs_wtags[p].replace('\xa0', '').replace('\t', '')
             if pgs_wtags[p] not in dis:
                 s = 0
                 e = 0
                 j = pgs_wtags[p]
+                
+                if j.find('k') != -1 and j.find('n') != -1 and j.find('e') != -1:
+                    j = ''
+
+                if j.count(' ') == len(j):
+                    del pgs_wtags[p]
+                    ln_prgs -= 1
+                    continue
+                    
                 while s != -1 and e != -1:
                     s = pgs_wtags[p].find(
                         t, s)
@@ -57,17 +68,13 @@ async def get_chapter(s, index, index_col, index_chapter):
                         pgs_wtags[p] = j[:s] + \
                             j[:e+len(t)]
 
-                if j.find('k') != -1 and j.find('n') != -1 and j.find('e') != -1:
-                    j = ''
-
-                if j.count(' ') == len(j):
-                    del pgs_wtags[p]
-                    ln_prgs -= 1
-                    continue
+                
                 p += 1
             else:
                 del pgs_wtags[p]
                 ln_prgs -= 1
+        
+        print(new_data[index]['cols'][index_col]['chapters'][index_chapter]['title'], new_data[index]['cols'][index_col]['chapters'][index_chapter]['chapter'])
         new_data[index]['cols'][index_col]['chapters'][index_chapter]['prgs'] = '::split::'.join(pgs_wtags)
         alrd[f'{index} {index_col} {index_chapter}'] = True
         return
