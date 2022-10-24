@@ -114,7 +114,7 @@ def main():
             for i in range(ln):
                 title = re.sub(to_clean, '', collapsible[i].text).replace(
                     '\n', '').replace('\t', '')
-                if novel['last_col'] is not None or title == novel['last_col']['title']:
+                if novel['last_col'] == None or title == novel['last_col']['title']:
                     new_col = True
 
                 if new_col:
