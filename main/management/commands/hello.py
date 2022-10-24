@@ -181,8 +181,9 @@ def main():
                         else:
                             print('End Col Of ', title,
                                   f'That Has {ln_chapters} Chapter')
-
-                    index_col += 1
+                    r = requests.get(f'{url}add_chapters/', json=new_data)
+                    print(r.status_code)
+                    del new_data[index]['cols'][index]
 
         else:
             if headers["User-Agent"] == "Mozilla/5.0 (X11; Windows x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36":
@@ -190,10 +191,9 @@ def main():
             else:
                 headers["User-Agent"] = "Mozilla/5.0 (X11; Windows x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36"
 
-        index += 1
+        del new_data[index]
 
-    r = requests.get(f'{url}add_chapters/', json=new_data)
-    print(r.status_code)
+    
 
 
 class Command(BaseCommand):
