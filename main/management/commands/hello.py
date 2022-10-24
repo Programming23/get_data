@@ -93,14 +93,17 @@ def main():
     
     r = requests.get(f'{url}get_last_chapters/')
     data = r.json()
-    new = False
-    new_col = False
+    
 
     index = 0
     for novel in data:
+        new = False
+        new_col = False
         new_data.append(
             {'id': novel['id'], 'name': novel['name'], 'cols': []})
         link = novel['link']
+        if novel['last_chapter'] == None:
+            new = True
         r = requests.get(link, headers=headers)
         if r.status_code == 200:
             b = bs(r.text, 'html.parser')
@@ -111,7 +114,7 @@ def main():
             for i in range(ln):
                 title = re.sub(to_clean, '', collapsible[i].text).replace(
                     '\n', '').replace('\t', '')
-                if title == novel['last_col']['title']:
+                if novel['last_col'] is not None or title == novel['last_col']['title']:
                     new_col = True
 
                 if new_col:
@@ -133,10 +136,11 @@ def main():
                             '\n', '').replace('\t', '')
                         date_chapter = children[2].text.replace(
                             '\n', '').replace('\t', '')
-
-                        if title_chapter == novel['last_chapter']['title'] and number_chapter == novel['last_chapter']['chapter']:
-                            new = True
-                            continue
+                        
+                        if not new:
+                            if title_chapter == novel['last_chapter']['title'] and number_chapter == novel['last_chapter']['chapter']:
+                                new = True
+                                continue
 
                         if new:
                             new_data[index]['cols'][index_col]['chapters'].append({
