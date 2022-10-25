@@ -50,7 +50,7 @@ async def get_chapter(s, index, index_col, index_chapter):
                 s = 0
                 e = 0
                 j = pgs_wtags[p]
-                
+
                 if j.find('k') != -1 and j.find('n') != -1 and j.find('e') != -1:
                     j = ''
 
@@ -58,7 +58,7 @@ async def get_chapter(s, index, index_col, index_chapter):
                     del pgs_wtags[p]
                     ln_prgs -= 1
                     continue
-                    
+
                 while s != -1 and e != -1:
                     s = pgs_wtags[p].find(
                         t, s)
@@ -68,14 +68,15 @@ async def get_chapter(s, index, index_col, index_chapter):
                         pgs_wtags[p] = j[:s] + \
                             j[:e+len(t)]
 
-                
                 p += 1
             else:
                 del pgs_wtags[p]
                 ln_prgs -= 1
-        
-        print(new_data[index]['cols'][index_col]['chapters'][index_chapter]['title'], new_data[index]['cols'][index_col]['chapters'][index_chapter]['chapter'])
-        new_data[index]['cols'][index_col]['chapters'][index_chapter]['prgs'] = '::split::'.join(pgs_wtags)
+
+        print(new_data[index]['cols'][index_col]['chapters'][index_chapter]['title'],
+              new_data[index]['cols'][index_col]['chapters'][index_chapter]['chapter'])
+        new_data[index]['cols'][index_col]['chapters'][index_chapter]['prgs'] = '::split::'.join(
+            pgs_wtags)
         alrd[f'{index} {index_col} {index_chapter}'] = True
         return
 
@@ -96,16 +97,17 @@ async def get_chapters_main(index, index_col, start, end):
         htmls = await get_chapters_tasks(session, index, index_col, start, end)
 
 url = 'https://novel.pythonanywhere.com/'
+
+
 def main():
-    
+    global new_data
     r = requests.get(f'{url}get_last_chapters/')
     data = r.json()
-    
 
     index = 0
     for novel in data:
         new = False
-        print(novel['name'])
+        print(novel['name'], len(new_data))
         new_col = False
         new_data.append(
             {'id': novel['id'], 'name': novel['name'], 'cols': []})
@@ -134,7 +136,6 @@ def main():
                         '.eplister.eplisterfull > ul > li > a')[::-1]
 
                     for ch in chs:
-
                         link = ch['href'].replace(
                             '\n', '').replace('\t', '')
                         children = ch.findChildren()
@@ -144,7 +145,7 @@ def main():
                             '\n', '').replace('\t', '')
                         date_chapter = children[2].text.replace(
                             '\n', '').replace('\t', '')
-                        
+
                         if not new:
                             if title_chapter == novel['last_chapter']['title'] and number_chapter == novel['last_chapter']['chapter']:
                                 new = True
@@ -189,29 +190,40 @@ def main():
                         else:
                             print('End Col Of ', title,
                                   f'That Has {ln_chapters} Chapter')
+
+                    # file = open('prev.json', 'w')
+                    # file.write(json.dumps(
+                    #     new_data, ensure_ascii=False, indent=3))
+                    # file.close()
                     r = requests.get(f'{url}add_chapters/', json=new_data)
-                    print(r.status_code)
-                    del new_data[index]['cols'][index]
+                    # del new_data[index]['cols'][index_col]
+                    new_data[index]['cols'][index_col] = {}
+                    # file = open('after.json', 'w')
+                    # file.write(json.dumps(
+                    #     new_data, ensure_ascii=False, indent=3))
+                    # file.close()
+                    index_col += 1
 
         else:
+            print(r.status_code)
             if headers["User-Agent"] == "Mozilla/5.0 (X11; Windows x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36":
                 headers["User-Agent"] = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36"
             else:
                 headers["User-Agent"] = "Mozilla/5.0 (X11; Windows x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36"
 
-        del new_data[index]
-
-    
+        new_data = []
 
 
 class Command(BaseCommand):
     help = 'Delete objects older than 10 days'
 
     def handle(self, *args, **options):
+        global new_data
+        global alrd
         while True:
             main()
             new_data = []
             alrd = {}
-            time.sleep(60)
+            # time.sleep(60)
 
         self.stdout.write('Get All Data Of Novel')
